@@ -1,8 +1,10 @@
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.width = 512;
-canvas.height = 480;
+canvas.width = 1020;
+canvas.height = 960;
+var canvasX = canvas.width;
+var canvasY = canvas.height;
 document.body.appendChild(canvas);
 
 
@@ -12,9 +14,39 @@ var bgImage = new Image();
 bgImage.onload = function () {
 	bgReady = true;
 };
-bgImage.src = "img/background1.png";
-var bgWidth = bgImage.width;
-var bgHeight = bgImage.height;
+bgImage.src = "img/Map.png";
+var bgX = bgImage.width;
+var bgY = bgImage.height;
+
+//ENTIRE BORDER
+
+var leftBorderReady = false;
+var leftBorderImage = new Image();
+leftBorderImage.onload = function () {
+	leftBorderReady = true;	
+}
+leftBorderImage.src = "img/leftTrees1020.png";
+
+var rightBorderReady = false;
+var rightBorderImage = new Image();
+rightBorderImage.onload = function () {
+	rightBorderReady = true;	
+}
+rightBorderImage.src = "img/rightTrees1020.png";
+
+var upBorderReady = false;
+var upBorderImage = new Image();
+upBorderImage.onload = function () {
+	upBorderReady = true;	
+}
+upBorderImage.src = "img/topTrees1020.png";
+
+var downBorderReady = false;
+var downBorderImage = new Image();
+downBorderImage.onload = function () {
+	downBorderReady = true;	
+}
+downBorderImage.src = "img/bottomTrees1020.png";
 
 // Hero image
 var heroReady = false;
@@ -40,6 +72,20 @@ monsterrImage.onload = function () {
 };
 monsterrImage.src = "img/monsterr.png";
 
+var monsterr2Ready = false;
+var monsterr2Image = new Image();
+monsterr2Image.onload = function () {
+	monsterr2Ready = true;
+};
+monsterr2Image.src = "img/monsterr2.png";
+
+var monsterr3Ready = false;
+var monsterr3Image = new Image();
+monsterr3Image.onload = function () {
+	monsterr3Ready = true;
+};
+monsterr3Image.src = "img/monsterr3.png";
+
 // Sword image
 var swordReady = false;
 var swordImage = new Image();
@@ -56,43 +102,30 @@ rockImage.onload = function () {
 }
 rockImage.src = "img/rock_tall2.png";
 
-//TOP BORDER
-var topBorderReady = false;
-var topBorderImage = new Image();
-topBorderImage.onload = function () {
-	topBorderReady = true;
-}
-topBorderImage.src = "img/topBorder.png";
+var theBadGuys = [];
+var spawnX, spawnY; 
 
-//SIDE BORDER
-var sideBorderReady = false;
-var sideBorderImage = new Image();
-sideBorderImage.onload = function () {
-	sideBorderReady = true;
-}
-sideBorderImage.src = "img/sideBorder.png";
+// var TO_RADIANS = Math.PI/180; 
+// function drawRotatedImage(image, x, y, angle)
+// { 
+//     // save the current co-ordinate system 
+//     // before we screw with it
+//     context.save(); 
 
-var TO_RADIANS = Math.PI/180; 
-function drawRotatedImage(image, x, y, angle)
-{ 
-    // save the current co-ordinate system 
-    // before we screw with it
-    context.save(); 
+//     // move to the middle of where we want to draw our image
+//     context.translate(x, y);
 
-    // move to the middle of where we want to draw our image
-    context.translate(x, y);
+//     // rotate around that point, converting our 
+//     // angle from degrees to radians 
+//     context.rotate(angle * TO_RADIANS);
 
-    // rotate around that point, converting our 
-    // angle from degrees to radians 
-    context.rotate(angle * TO_RADIANS);
+//     // draw it up and to the left by half the width
+//     // and height of the image 
+//     context.drawImage(image, -(image.width/2), -(image.height/2));
 
-    // draw it up and to the left by half the width
-    // and height of the image 
-    context.drawImage(image, -(image.width/2), -(image.height/2));
-
-    // and restore the co-ords to how they were when we began
-    context.restore(); 
-}
+//     // and restore the co-ords to how they were when we began
+//     context.restore(); 
+// }
 
 
 // Game objects
@@ -105,19 +138,28 @@ var sword = {
 var monster = {
 	speed: 256
 };
-
-var monstersCaught = 0;
-
 var monsterr = {
 	speed: 256
 };
+var monsterr2 = {
+	speed: 256
+};
+var monsterr3 = {
+	speed: 256
+};
+var monstersCaught = 0;
 
-var borderX = 0;
-var borderY = 0;
+var leftBorder = {};
 
-var rockTopBorder = {};
+var rightBorder = {};
 
-var sideBorder = {};
+var upBorder = {};
+
+var downBorder = {};
+
+// Handle keyboard controls
+var keysDown = {};
+
 
 // var monsterX = monster.x;
 // var monsterY = monster.y;
@@ -178,12 +220,6 @@ var sideBorder = {};
 // 		}
 // 	}
 
-
-
-
-// Handle keyboard controls
-var keysDown = {};
-
 addEventListener("keydown", function (e) {
 	keysDown[e.keyCode] = true;
 }, false);
@@ -192,10 +228,50 @@ addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
 
+//TEST 
+// function pushBadGuy() {
+// 	if (Math.random() < 0.5) {
+// 		spawnX = Math.random() < 0.5 ? -20 : 820;
+// 		spawnY = Math.random() * 600;
+// 	} else {
+// 		spawnX = Math.random() * 800;
+// 		spawnY = Math.random() < 0.5 ? -20 : 620;
+// 	}
+// 	theBadGuys.push( { 
+// 		x: spawnX, y: spawnY, w: 10, h: 10, speed: Math.ceil(Math.random()* 3 )
+// 	});
+// }
+
+// function badGuysMove(){
+// 	theBadGuys.forEach( function(i, j){
+// 		if (i.x > monster.x) {i.x -= i.speed;}
+// 		if (i.x < monsterr.x) {i.x += i.speed;}
+// 		if (i.y > monsterr2.y) {i.y -= i.speed;}
+// 		if (i.y < monsterr3.y) {i.y += i.speed;}
+// 	});
+// }
+
+// function badGuysDraw(){
+// 	theBadGuys.forEach( function(i, j) {
+// 		c.beginPath();
+// 		c.fillStyle="blue";
+// 		c.strokeStyle="red";
+// 		c.rect(i.x, i.y, i.w, i.h);
+// 		c.lineWidth=1;
+// 		c.stroke();
+// 		c.fill();
+// 	});
+// }
+
+
+	//TEST
+
 // Reset the game when the player catches a monster
 var reset = function () {
+
 	hero.x = (canvas.width / 2) - 32;
 	hero.y = (canvas.height / 2 + 32) + 100;
+
 
 	// Throw the monster somewhere on the screen randomly
 	monster.x = 32 + (Math.random() * (canvas.width - 64));
@@ -205,26 +281,19 @@ var reset = function () {
 	monsterr.x = 32 + (Math.random() * (canvas.width - 64));
 	monsterr.y = 32 + (Math.random() * (canvas.height - 64));
 
+	// Throw the monsterr somewhere on the screen randomly
+	monsterr2.x = 32 + (Math.random() * (canvas.width - 64));
+	monsterr2.y = 32 + (Math.random() * (canvas.height - 64));
+
+	// Throw the monsterr somewhere on the screen randomly
+	monsterr3.x = 32 + (Math.random() * (canvas.width - 64));
+	monsterr3.y = 32 + (Math.random() * (canvas.height - 64));
+
 	// POSITION ROCK BARRIER
-	rockTopBorder.x = 0;
-	rockTopBorder.y = 0;
-	
-	// SIDE BORDER
-	sideBorder.x = 0;
-	sideBorder.y = 32;
-
-
 };
 
 // Update game objects
 var update = function (modifier) {
-
-	// if(keysDown) {
-	// 	monsterMovement(modifier);
-	// 	monster
-	// }
-
-
 
 	if (38 in keysDown) { // Player holding up
 		hero.y -= hero.speed * modifier;
@@ -268,6 +337,20 @@ var update = function (modifier) {
 		
 	}
 
+	// TOUCHING BORDER?
+	if ((hero.x + 32) >= (canvas.width / 2) + 478){
+		hero.x = hero.x - 32;
+	}
+	if ((hero.x + 32) <= (canvas.width / 2) - 478){
+		hero.x = hero.x + 32;
+	}
+	if ((hero.y - 32) >= canvas.height - (canvas.height + 30)){
+		hero.y = hero.y - 64;
+	}
+	if ((hero.y + 128) <= (canvas.height) - 30){
+		hero.y = hero.y + 64;
+	}
+
 
 
 	// Are they touching?
@@ -293,13 +376,15 @@ var update = function (modifier) {
 		++monstersCaught;
 		reset();
 	}
+	//left border
 
-	if(
-		hero.y <= (rockTopBorder.y + 32) 
-	&&  rockTopBorder.y <= (hero.y + 32)
-	) {
-		hero.y = hero.y + 32;
-	}
+	
+	// while(
+	// 	hero.y <= 
+	// &&  rockTopBorder.y <= (hero.y + 32)
+	// ) {
+	// 	hero.y = hero.y + 32;
+	// }
 
 	
 };
@@ -316,8 +401,7 @@ var render = function () {
 
 	if (swordReady) {
 		ctx.drawImage(swordImage, sword.x, sword.y);
-		
-
+	
 	}
 
 	if (monsterReady) {
@@ -329,15 +413,26 @@ var render = function () {
 		ctx.drawImage(monsterrImage, monsterr.x, monsterr.y);
 		
 	}
-	if(topBorderReady) {
-		ctx.drawImage(topBorderImage, 0, 0);
+	if (monsterr2Ready) {
+		ctx.drawImage(monsterr2Image, monsterr2.x, monsterr2.y);
+		
 	}
-	if(sideBorderReady) {
-		ctx.drawImage(sideBorderImage, sideBorder.x, sideBorder.y);
+	if (monsterr3Ready) {
+		ctx.drawImage(monsterr3Image, monsterr3.x, monsterr3.y);
+		
 	}
-
-
-	
+	if(upBorderReady) {
+		ctx.drawImage(upBorderImage, 0, 0);
+	}
+	if(downBorderReady) {
+		ctx.drawImage(downBorderImage, 0, 930);
+	}
+	if(leftBorderReady) {
+		ctx.drawImage(leftBorderImage, 0, 0);
+	}
+	if(rightBorderReady) {
+		ctx.drawImage(rightBorderImage, 988, 0);
+	}
 
 	// Score
 	ctx.fillStyle = "rgb(250, 250, 250)";
@@ -357,6 +452,10 @@ var main = function () {
 	update(delta / 1000);
 	// swordHit();
 	// update(delta / 1000);
+
+	// playerMove();		
+	// playerDraw();
+
 
 	//CALL RENDER TO DRAW
 	render();
