@@ -1,15 +1,20 @@
+
+document.body.style.zoom="70%"
 // IMAGE VARIABLES FOR MOVEMENT
 // speed = movement in pixels per second};
 var hero = { speed: 256 };
 var sword = { speed: 1024};
 var monster = { speed: 256};
 var monsterr = { speed: 256};
-var monsterr2 = { speed: 256};
+var monsterr2 = { speed: 1024};
 var monsterr3 = { speed: 256};
 var monstersCaught = 0;
 var keysDown = {};
 var level = 0;
-// var randomNum = Math.Round(Math.random());
+// var monsterGo = 0;
+// var monsterStart = false;
+// var randomNumX = Math.Round((Math.random() * canvas.width) / canvas.width);
+// var randomNumY = Math.Round((Math.random() * canvas.height) * 0.1);
 
 // Create the canvas
 var canvas = document.createElement("canvas");
@@ -190,30 +195,57 @@ var reset = function () {
 // UPDATE GAME OBJECTS
 var update = function (modifier) {
 
+	// monsterGo + 1;
+	
+	// if(monsterGo = 0){
+	// monster.x += 32 + (Math.random() * (canvas.width - 64));
+	// monster.y += 32 + (Math.random() * (canvas.height - 64));
+
+	// // Throw the monsterr somewhere on the screen randomly
+	// monsterr.x += 32 + (Math.random() * (canvas.width - 64));
+	// monsterr.y += 32 + (Math.random() * (canvas.height - 64));
+
+	// // Throw the monsterr somewhere on the screen randomly
+	// monsterr2.x += 32 + (Math.random() * (canvas.width - 64));
+	// monsterr2.y += 32 + (Math.random() * (canvas.height - 64));
+
+	// // Throw the monsterr somewhere on the screen randomly
+	// monsterr3.x += 32 + (Math.random() * (canvas.width - 64));
+	// monsterr3.y += 32 + (Math.random() * (canvas.height - 64));
+
+	// }
+
 	//HERO MOVEMENT MODIFIER
 	if (38 in keysDown) { // Player holding up
 		hero.y -= hero.speed * modifier;
 		sword.x = (hero.x + 44);
 		sword.y = (hero.y - 32);
-		monster.y = (monster.y + 8)
+		monster.y = (monster.y + 8);
+		monsterr.x = (monsterr.x + 6)
+
 	}
 	if (40 in keysDown) { // Player holding down
 		hero.y += hero.speed * modifier;
 		sword.x = (hero.x - 16);
 		sword.y = (hero.y - 32);
-		monster.y = (monster.y - 8)
+		monster.y = (monster.y - 8);
+		monsterr.y = (monsterr.y + 6);
+		monsterr3.yx = (monsterr3.x + 6)
 	}
 	if (37 in keysDown) { // Player holding left
 		hero.x -= hero.speed * modifier;
 		sword.x = (hero.x - 16);
 		sword.y = (hero.y - 32);
-		monsterr.x = (monsterr.x + 6)
+		monsterr.x = (monsterr.x + 6);
+		monsterr2.x = (monsterr2.x + 6);
+		monsterr3.y = (monsterr3.y + 6)
 	}
 	if (39 in keysDown) { // Player holding right
 		hero.x += hero.speed * modifier;
 		sword.x = (hero.x + 44);
 		sword.y = (hero.y - 32);
-		monsterr.x = (monsterr.x - 6)
+		monsterr.x = (monsterr.x - 6);
+		monsterr2.y = (monsterr2.y + 6)
 	}
 
 
@@ -293,6 +325,7 @@ var update = function (modifier) {
 
 // DRAW OBJECTS
 var render = function () {
+	// monsterGo - 1;
 	if (bgReady) {
 		ctx.drawImage(bgImage, 0, 0);
 	}
@@ -350,7 +383,7 @@ var render = function () {
 		ctx.font = "20px Helvetica";
 		ctx.textAlign = "left";
 		ctx.textBaseline = "top";
-		ctx.fillText("Level 2", 900, 32);
+		ctx.fillText("Level 1", 900, 32);
 	}
 };
 
